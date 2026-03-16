@@ -31,7 +31,7 @@ import java.io.IOException
 
 @Composable
 fun LoginScreen(navigationConroller: NavHostController,
-    onLoginClick: (String) -> Unit
+                onLoginClick: (String) -> Unit
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }

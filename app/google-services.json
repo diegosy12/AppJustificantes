@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "895052390115",
+    "project_id": "proyecto-60c1d",
+    "storage_bucket": "proyecto-60c1d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:895052390115:android:c1f453d6e48f42126b2fd6",
+        "android_client_info": {
+          "package_name": "com.example.appjustificantes"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjsIiDqIiiGGNUJvlTrtURp41wvmCA_vY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
