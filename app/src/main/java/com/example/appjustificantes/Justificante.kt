@@ -1,7 +1,6 @@
 package com.example.appjustificantes
 
 import android.net.Uri
-import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -9,7 +8,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -103,7 +101,7 @@ fun HomeScreen(email: String,navigationConroller: NavHostController) {
                 if (error) {
                     Text(
                         text = "Fecha inválida",
-                        color = androidx.compose.ui.graphics.Color.Red
+                        color =Color.Red
                     )
                 }
 
@@ -123,7 +121,7 @@ fun HomeScreen(email: String,navigationConroller: NavHostController) {
                 Spacer(modifier = Modifier.height(8.dp))
                 if (selectedFile != null) {
                     Text(
-                        text = "Archivo seleccionado: ${fileName}",
+                        text = "Archivo seleccionado: $fileName",
                         fontSize = 14.sp,
                         color = Color.DarkGray,
                         modifier = Modifier.padding(start = 4.dp)
@@ -186,7 +184,7 @@ fun isValidDate(input: String, format: SimpleDateFormat): Boolean {
     return try {
         format.parse(input)
         true
-    } catch (e: ParseException) {
+    } catch (_: ParseException) {
         false
     }
 }

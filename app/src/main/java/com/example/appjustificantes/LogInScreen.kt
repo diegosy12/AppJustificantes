@@ -1,7 +1,6 @@
 package com.example.appjustificantes
 
-import android.media.Image
-import android.util.Log
+
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,14 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.json.JSONObject
-import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.IOException
+
 
 
 @Composable
@@ -62,7 +54,7 @@ fun LoginScreen(navigationConroller: NavHostController,
                         .fillMaxWidth(),
                     horizontalAlignment = Alignment.Start
                 ){
-                    Text("Correo electrónico", fontWeight = FontWeight.Bold,fontSize = 17.sp,)
+                    Text("Correo electrónico", fontWeight = FontWeight.Bold,fontSize = 17.sp)
                     OutlinedTextField(
                         value = email,
                         onValueChange = { email = it },
@@ -75,7 +67,7 @@ fun LoginScreen(navigationConroller: NavHostController,
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
-                    Text("Contraseña", fontWeight = FontWeight.Bold,fontSize = 17.sp,)
+                    Text("Contraseña", fontWeight = FontWeight.Bold,fontSize = 17.sp)
                     OutlinedTextField(
                         value = password,
                         onValueChange = { password = it },
