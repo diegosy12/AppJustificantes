@@ -2,6 +2,7 @@ package com.example.appjustificantes
 
 import android.net.Uri
 import android.widget.EditText
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -18,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -26,6 +28,7 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Locale
 
+import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
 fun HomeScreen(email: String,navigationConroller: NavHostController) {
@@ -38,6 +41,8 @@ fun HomeScreen(email: String,navigationConroller: NavHostController) {
     var selectedFile by remember { mutableStateOf<Uri?>(null) }
     var fileName by remember { mutableStateOf("No hay archivo seleccionado") }
 
+    val context = LocalContext.current
+    val db = remember { FirebaseFirestore.getInstance() }
     // Launcher para seleccionar archivo
     val fileLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -126,7 +131,40 @@ fun HomeScreen(email: String,navigationConroller: NavHostController) {
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(
-                    onClick = { },
+                    onClick = {
+                        if (date.isBlank()) {
+                            Toast.makeText(context, "Introduce la fecha", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
+
+                        if (!isValidDate(date, dateFormat)) {
+                            Toast.makeText(context, "La fecha no es válida", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
+
+                        if (selectedFile == null) {
+                            Toast.makeText(context, "Selecciona un archivo", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
+
+                        val falta = hashMapOf(
+                            "email" to email,
+                            "fecha" to date,
+                            "justificanteNombre" to fileName
+                        )
+
+                        db.collection("faltas")
+                            .add(falta)
+                            .addOnSuccessListener {
+                                Toast.makeText(context, "Falta guardada correctamente", Toast.LENGTH_SHORT).show()
+                                date = ""
+                                selectedFile = null
+                                fileName = "No hay archivo seleccionado"
+                            }
+                            .addOnFailureListener { e ->
+                                Toast.makeText(context, "Error al guardar: ${e.message}", Toast.LENGTH_SHORT).show()
+                            }
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Black,
