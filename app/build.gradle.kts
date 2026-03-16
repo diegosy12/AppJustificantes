@@ -61,7 +61,7 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:34.10.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation(libs.androidx.navigation.compose)
-    implementation(libs.firebase.auth.ktx)
+    implementation("com.google.firebase:firebase-auth")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

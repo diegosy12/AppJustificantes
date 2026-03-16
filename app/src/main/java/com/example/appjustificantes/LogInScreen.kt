@@ -19,6 +19,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -37,6 +38,7 @@ fun LoginScreen(navigationConroller: NavHostController,
     var password by remember { mutableStateOf("") }
     val context = LocalContext.current
 
+    val auth = FirebaseAuth.getInstance()
     Column(
         modifier = Modifier
             .fillMaxSize().background(Color(0xFFF2F2F2)),
@@ -92,10 +94,27 @@ fun LoginScreen(navigationConroller: NavHostController,
 
                 Button(
                     onClick = {
-                        // Lanzamos coroutine para no bloquear UI
-                        kotlinx.coroutines.CoroutineScope(Dispatchers.Main).launch {
-                            loginApi(email, password, context, onLoginClick)
+                        if (email.isBlank() || password.isBlank()) {
+                            Toast.makeText(
+                                context,
+                                "Introduce el correo y la contraseña",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@Button
                         }
+                        auth.signInWithEmailAndPassword(email.trim(), password)
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    val userEmail = auth.currentUser?.email ?: email.trim()
+                                    onLoginClick(userEmail)
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        task.exception?.message ?: "Error al iniciar sesión",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
                     },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
@@ -112,63 +131,5 @@ fun LoginScreen(navigationConroller: NavHostController,
 
         }
 
-    }
-}
-
-
-// Función para hacer login a la API Node.js
-suspend fun loginApi(
-    email: String,
-    password: String,
-    context: android.content.Context,
-    onLoginClick: (String) -> Unit
-) {
-    withContext(Dispatchers.IO) {
-        try {
-            val client = OkHttpClient()
-            val json = JSONObject()
-            json.put("email", email)
-            json.put("password", password)
-
-            val mediaType = "application/json; charset=utf-8".toMediaType()
-            val body = json.toString().toRequestBody(mediaType)
-
-            val request = Request.Builder()
-                .url("http://192.168.1.137:3000/login") // TU IP LOCAL Y PUERTO DE NODE
-                .post(body)
-                .build()
-
-            client.newCall(request).enqueue(object : Callback {
-                override fun onFailure(call: Call, e: IOException) {
-                    Log.e("LoginAPI", "Error de conexión: ${e.message}")
-                    android.os.Handler(context.mainLooper).post {
-                        Toast.makeText(context, "Error de conexión", Toast.LENGTH_SHORT).show()
-                    }
-                }
-
-                override fun onResponse(call: Call, response: Response) {
-                    val responseString = response.body?.string() ?: ""
-                    Log.d("LoginAPI", "Respuesta completa: $responseString")
-
-                    val jsonResponse = JSONObject(responseString)
-                    if (jsonResponse.optBoolean("success")) {
-                        val userEmail = jsonResponse.getJSONObject("user").getString("email")
-                        android.os.Handler(context.mainLooper).post {
-                            onLoginClick(userEmail)
-                        }
-                    } else {
-                        val message = jsonResponse.optString("message", "Error desconocido")
-                        android.os.Handler(context.mainLooper).post {
-                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                }
-            })
-        } catch (e: Exception) {
-            Log.e("LoginAPI", "Excepción: ${e.message}")
-            android.os.Handler(context.mainLooper).post {
-                Toast.makeText(context, "Excepción: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
-        }
     }
 }
